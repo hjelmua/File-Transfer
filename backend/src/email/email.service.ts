@@ -37,7 +37,7 @@ export class EmailService {
   }
 
   private loadTemplate(name: string): string {
-    const templatePath = path.join(__dirname, "templates", `${name}.html`);
+    const templatePath = path.join(__dirname, "../..", "email", "templates", `${name}.html`);
     try {
       return fs.readFileSync(templatePath, "utf-8");
     } catch (e) {
