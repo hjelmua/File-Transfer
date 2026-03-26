@@ -1,5 +1,6 @@
 import { Anchor, Footer as MFooter, SimpleGrid, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { FaGithub } from "react-icons/fa";
 import useConfig from "../../hooks/config.hook";
 import useTranslate from "../../hooks/useTranslate.hook";
 
@@ -28,13 +29,14 @@ const Footer = () => {
       <SimpleGrid cols={isMobile ? 2 : 3} m={0}>
         {!isMobile && <div></div>}
         <Text size="xs" color="dimmed" align={isMobile ? "left" : "center"}>
-          Powered by{" "}
           <Anchor
             size="xs"
-            href="https://github.com/stonith404/pingvin-share"
+            href="https://github.com/hjelmua/File-Transfer"
             target="_blank"
+            style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
           >
-            Pingvin Share
+            <FaGithub size={12} />
+            Open source code by hjelmua
           </Anchor>
         </Text>
         <div>
