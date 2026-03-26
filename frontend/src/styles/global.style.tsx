@@ -4,6 +4,9 @@ const GlobalStyle = () => {
   return (
     <Global
       styles={(theme) => ({
+        body: {
+          backgroundColor: theme.colorScheme === "dark" ? undefined : "#FAF5F0",
+        },
         a: {
           color: "inherit",
           textDecoration: "none",
