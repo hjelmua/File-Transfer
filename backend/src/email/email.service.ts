@@ -38,7 +38,12 @@ export class EmailService {
 
   private loadTemplate(name: string): string {
     const templatePath = path.join(__dirname, "templates", `${name}.html`);
-    return fs.readFileSync(templatePath, "utf-8");
+    try {
+      return fs.readFileSync(templatePath, "utf-8");
+    } catch (e) {
+      this.logger.error(`Failed to load email template "${name}": ${e.message}`);
+      throw new InternalServerErrorException(`Email template "${name}" not found`);
+    }
   }
 
   private async sendMail(
