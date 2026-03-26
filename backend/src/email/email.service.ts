@@ -4,8 +4,10 @@ import {
   Logger,
 } from "@nestjs/common";
 import { User } from "@prisma/client";
+import * as fs from "fs";
 import * as moment from "moment";
 import * as nodemailer from "nodemailer";
+import * as path from "path";
 import { ConfigService } from "src/config/config.service";
 
 @Injectable()
@@ -34,7 +36,17 @@ export class EmailService {
     });
   }
 
-  private async sendMail(email: string, subject: string, text: string) {
+  private loadTemplate(name: string): string {
+    const templatePath = path.join(__dirname, "templates", `${name}.html`);
+    return fs.readFileSync(templatePath, "utf-8");
+  }
+
+  private async sendMail(
+    email: string,
+    subject: string,
+    text: string,
+    html?: string,
+  ) {
     await this.getTransporter()
       .sendMail({
         from: `"${this.config.get("general.appName")}" <${this.config.get(
@@ -43,6 +55,7 @@ export class EmailService {
         to: email,
         subject,
         text,
+        html,
       })
       .catch((e) => {
         this.logger.error(e);
@@ -62,35 +75,56 @@ export class EmailService {
 
     const shareUrl = `${this.config.get("general.appUrl")}/s/${shareId}`;
 
+    const text = this.config
+      .get("email.shareRecipientsMessage")
+      .replaceAll("\\n", "\n")
+      .replaceAll("{creator}", creator?.username ?? "Someone")
+      .replaceAll("{creatorEmail}", creator?.email ?? "")
+      .replaceAll("{shareUrl}", shareUrl)
+      .replaceAll("{desc}", description ?? "No description")
+      .replaceAll(
+        "{expires}",
+        moment(expiration).unix() != 0
+          ? moment(expiration).fromNow()
+          : "in: never",
+      );
+
+    const html = this.loadTemplate("share-recipients")
+      .replaceAll("{creator}", creator?.username ?? "Someone")
+      .replaceAll("{creatorEmail}", creator?.email ?? "")
+      .replaceAll("{shareUrl}", shareUrl)
+      .replaceAll("{desc}", description ?? "No description")
+      .replaceAll(
+        "{expires}",
+        moment(expiration).unix() != 0
+          ? moment(expiration).fromNow()
+          : "in: never",
+      );
+
     await this.sendMail(
       recipientEmail,
       this.config.get("email.shareRecipientsSubject"),
-      this.config
-        .get("email.shareRecipientsMessage")
-        .replaceAll("\\n", "\n")
-        .replaceAll("{creator}", creator?.username ?? "Someone")
-        .replaceAll("{creatorEmail}", creator?.email ?? "")
-        .replaceAll("{shareUrl}", shareUrl)
-        .replaceAll("{desc}", description ?? "No description")
-        .replaceAll(
-          "{expires}",
-          moment(expiration).unix() != 0
-            ? moment(expiration).fromNow()
-            : "in: never",
-        ),
+      text,
+      html,
     );
   }
 
   async sendMailToReverseShareCreator(recipientEmail: string, shareId: string) {
     const shareUrl = `${this.config.get("general.appUrl")}/s/${shareId}`;
 
+    const text = this.config
+      .get("email.reverseShareMessage")
+      .replaceAll("\\n", "\n")
+      .replaceAll("{shareUrl}", shareUrl);
+
+    const html = this.loadTemplate("reverse-share")
+      .replaceAll("{shareUrl}", shareUrl);
+
     await this.sendMail(
       recipientEmail,
       this.config.get("email.reverseShareSubject"),
-      this.config
-        .get("email.reverseShareMessage")
-        .replaceAll("\\n", "\n")
-        .replaceAll("{shareUrl}", shareUrl),
+      text,
+      html,
     );
   }
 
@@ -99,27 +133,41 @@ export class EmailService {
       "general.appUrl",
     )}/auth/resetPassword/${token}`;
 
+    const text = this.config
+      .get("email.resetPasswordMessage")
+      .replaceAll("\\n", "\n")
+      .replaceAll("{url}", resetPasswordUrl);
+
+    const html = this.loadTemplate("reset-password")
+      .replaceAll("{url}", resetPasswordUrl);
+
     await this.sendMail(
       recipientEmail,
       this.config.get("email.resetPasswordSubject"),
-      this.config
-        .get("email.resetPasswordMessage")
-        .replaceAll("\\n", "\n")
-        .replaceAll("{url}", resetPasswordUrl),
+      text,
+      html,
     );
   }
 
   async sendInviteEmail(recipientEmail: string, password: string) {
     const loginUrl = `${this.config.get("general.appUrl")}/auth/signIn`;
 
+    const text = this.config
+      .get("email.inviteMessage")
+      .replaceAll("{url}", loginUrl)
+      .replaceAll("{password}", password)
+      .replaceAll("{email}", recipientEmail);
+
+    const html = this.loadTemplate("invite")
+      .replaceAll("{url}", loginUrl)
+      .replaceAll("{password}", password)
+      .replaceAll("{email}", recipientEmail);
+
     await this.sendMail(
       recipientEmail,
       this.config.get("email.inviteSubject"),
-      this.config
-        .get("email.inviteMessage")
-        .replaceAll("{url}", loginUrl)
-        .replaceAll("{password}", password)
-        .replaceAll("{email}", recipientEmail),
+      text,
+      html,
     );
   }
 
