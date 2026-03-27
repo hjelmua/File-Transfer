@@ -36,7 +36,11 @@ const MyShares = () => {
   const [shares, setShares] = useState<MyShare[]>();
 
   useEffect(() => {
-    shareService.getMyShares().then((shares) => setShares(shares));
+    const load = () =>
+      shareService.getMyShares().then((shares) => setShares(shares));
+    load();
+    window.addEventListener("focus", load);
+    return () => window.removeEventListener("focus", load);
   }, []);
 
   if (!shares) return <CenterLoader />;
