@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Box,
+  Button,
   Group,
   Skeleton,
   Stack,
@@ -133,14 +134,16 @@ const FileList = ({
                           <TbLink />
                         </ActionIcon>
                       )}
-                      <ActionIcon
-                        size={25}
+                      <Button
+                        color="hjelm"
+                        variant="light"
+                        leftIcon={<TbDownload size={16} />}
                         onClick={async () => {
                           await shareService.downloadFile(share.id, file.id);
                         }}
                       >
-                        <TbDownload />
-                      </ActionIcon>
+                        Ladda ner
+                      </Button>
                     </Group>
                   </td>
                 </tr>
