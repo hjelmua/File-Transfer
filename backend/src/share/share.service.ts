@@ -232,7 +232,7 @@ export class ShareService {
       orderBy: {
         expiration: "desc",
       },
-      include: { recipients: true, files: true, security: true },
+      include: { recipients: true, files: true, security: true, downloads: { orderBy: { createdAt: "asc" } } },
     });
 
     return shares.map((share) => {
@@ -244,6 +244,7 @@ export class ShareService {
           maxViews: share.security?.maxViews,
           passwordProtected: !!share.security?.password,
         },
+        downloads: share.downloads.map((d) => d.createdAt),
       };
     });
   }
@@ -311,6 +312,9 @@ export class ShareService {
     await this.prisma.share.update({
       where: { id: share.id },
       data: { views: share.views + 1 },
+    });
+    await this.prisma.shareDownload.create({
+      data: { shareId: share.id },
     });
   }
 

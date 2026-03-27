@@ -65,6 +65,23 @@ const showShareInformationsModal = (
           {formattedExpiration}
         </Text>
         <Divider />
+        <Text size="sm">
+          <b>
+            <FormattedMessage id="account.shares.table.visitors" />:{" "}
+          </b>
+          {share.views === 0 ? (
+            "-"
+          ) : (
+            <Stack spacing={2} mt={4}>
+              {share.downloads.map((date, i) => (
+                <Text key={i} size="sm">
+                  {moment(date).format("LLL")}
+                </Text>
+              ))}
+            </Stack>
+          )}
+        </Text>
+        <Divider />
         <CopyTextField link={link} />
         <Divider />
         <Text size="sm">

@@ -95,6 +95,7 @@ model Share {
   security   ShareSecurity?
   recipients ShareRecipient[]
   files      File[]
+  downloads  ShareDownload[]
   storageProvider String @default("LOCAL")
 }
 
@@ -130,6 +131,14 @@ model File {
 
   name String
   size String
+
+  shareId String
+  share   Share  @relation(fields: [shareId], references: [id], onDelete: Cascade)
+}
+
+model ShareDownload {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
 
   shareId String
   share   Share  @relation(fields: [shareId], references: [id], onDelete: Cascade)
