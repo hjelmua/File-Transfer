@@ -18,3 +18,9 @@
 | `/etc/caddy/Caddyfile` | Reverse proxy + HTTPS |
 
 Docker-imagen heter `hjelm-share` och byggs lokalt från repot – ingen extern registry.
+
+## TODO: Tydligare nedladdningsknapp
+
+Nedladdningsknappen på share-sidan (`/share/[shareId]`) är för liten - bara en pytteliten ikon i slutet av varje filrad.
+Överväg att göra den tydligare, t.ex. en knapp med text ("Ladda ner") eller större ikon, gärna i Hjelm-färg.
+Relevant fil: `frontend/src/components/share/FileList.tsx`
