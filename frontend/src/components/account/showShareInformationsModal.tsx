@@ -69,7 +69,7 @@ const showShareInformationsModal = (
           <b>
             <FormattedMessage id="account.shares.table.visitors" />:{" "}
           </b>
-          {share.views === 0 ? (
+          {!share.downloads?.length ? (
             "-"
           ) : (
             <Stack spacing={2} mt={4}>
