@@ -26,7 +26,7 @@ export class MyShareDTO extends OmitType(ShareDTO, [
   security?: MyShareSecurityDTO;
 
   @Expose()
-  downloads: Date[];
+  downloads?: Date[];
 
   from(partial: Partial<MyShareDTO>) {
     return plainToClass(MyShareDTO, partial, { excludeExtraneousValues: true });
